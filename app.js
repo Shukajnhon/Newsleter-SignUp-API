@@ -18,8 +18,28 @@ mailchimp.setConfig({
 
 // test call API
 async function getInfo() {
-    const res = await mailchimp.ping.get();
-    console.log(res);
+    try {
+        const res = await mailchimp.ping.get();
+        console.log(res);
+        // const response = await mailchimp.lists.addListMember("68f00cfa76", {
+        //     userName: userNameSignUp,
+        //     email_address: emailSignUp,
+        //     status: "Subscribed",
+        //     merge_fields: {
+        //         FNAME: firstName,
+        //         LNAME: lastName,
+
+        //     }
+
+        //     email_address: "ME1@gmail.com",
+        //     status: "subscribed",
+
+        // });
+        // console.log(response.status);
+    } catch (error) {
+        console.log(error.status)
+    }
+
 
     // const response = await mailchimp.lists.getAllLists();
     // console.log(response);
@@ -35,22 +55,6 @@ async function getInfo() {
     //         LNAME: 'Xiao2',
 
     //     }
-    // });
-    // console.log(response);
-
-    // const response = await mailchimp.lists.addListMember("68f00cfa76", {
-    //     // userName: userNameSignUp,
-    //     // email_address: emailSignUp,
-    //     // status: "Subscribed",
-    //     // merge_fields: {
-    //     //     FNAME: firstName,
-    //     //     LNAME: lastName,
-
-    //     // }
-
-    //     email_address: "ME@gmail.com",
-    //     status: "Subscribed",
-
     // });
     // console.log(response);
 
@@ -94,7 +98,7 @@ app.post("/", (req, res) => {
 
         userName: userNameSignUp,
         email_address: emailSignUp,
-        status: "subscribed",
+        status: "Subscribed",
         // status: "pending",
         merge_fields: {
             FNAME: firstName,
@@ -105,21 +109,40 @@ app.post("/", (req, res) => {
 
     // const jsonData = JSON.stringify(data);
 
-
-
-
     // Add member to list
     // const dc = 'us14'
     const listId = '68f00cfa76'
 
     const addMember = async () => {
+        // NOTE: using Async, needed Try catch to catch Error.
+        try {
+            const response = await mailchimp.lists.addListMember(listId, data);
+            // console.log(response.status);
+            if (response.status === 200) {
+                // res.send("Successfully subscribed!")
+                res.sendFile(__dirname + "/success.html")
 
-        const response = await mailchimp.lists.addListMember(listId, data);
-        console.log(response);
+            }
+
+        } catch (error) {
+            console.log(error.status, error.detail)
+            // res.send("There were an error with signing up , please try again!")
+
+            res.sendFile(__dirname + "/failure.html")
+        }
+
+
     };
 
     addMember();
 
+})
+
+// route when Failure
+app.post("/failure", (req, res) => {
+    {
+        res.redirect("/")
+    }
 })
 
 app.listen(3000, () => {
