@@ -98,7 +98,7 @@ app.post("/", (req, res) => {
 
         userName: userNameSignUp,
         email_address: emailSignUp,
-        status: "Subscribed",
+        status: "subscribed",
         // status: "pending",
         merge_fields: {
             FNAME: firstName,
